@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   api:
     networks:
@@ -11,6 +9,11 @@ services:
     environment:
       - NODE_ENV=development
     command: npm run dev
+  db:
+    networks:
+      - flavor-network
+    volumes:
+      - ./DATA/DB_DATA:/var/lib/postgresql/data
 
 networks:
   flavor-network:
