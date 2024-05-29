@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Backup {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  secret      String
+  user        Users    @relation(fields: [user_id], references: [id])
+  user_id     String   @db.Uuid
+  created_at  DateTime @default(now())
+  modified_at DateTime @updatedAt
+}
+
+model Authenticator {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  secret      String
+  otpauth_url String
+  user        Users    @relation(fields: [user_id], references: [id])
+  user_id     String   @db.Uuid
+  created_at  DateTime @default(now())
+  modified_at DateTime @updatedAt
+}
+
+model Users {
+  id            String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email         String          @unique
+  name          String
+  password      String
+  role          Roles           @relation(fields: [role_id], references: [id])
+  role_id       String
+  status        Boolean         @default(true)
+  created_at    DateTime        @default(now())
+  modified_at   DateTime        @updatedAt
+  rolesId       String
+  Authenticator Authenticator[]
+  Backup        Backup[]
+  Restaurants   Restaurants[]
+  Payments      Payments[]
+}
+
+model Restaurants {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  user        Users      @relation(fields: [user_id], references: [id])
+  user_id     String     @db.Uuid
+  created_at  DateTime   @default(now())
+  modified_at DateTime   @updatedAt
+  Payments    Payments[]
+  Foods       Foods[]
+}
+
+model Roles {
+  id    String  @id
+  name  String  @unique
+  Users Users[]
+}
+
+model Payments {
+  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user          Users          @relation(fields: [user_id], references: [id])
+  user_id       String         @db.Uuid
+  restaurant    Restaurants    @relation(fields: [restaurant_id], references: [id])
+  restaurant_id String         @db.Uuid
+  amount        Float
+  rating        Float
+  coupn         Coupons        @relation(fields: [coupon_id], references: [id])
+  coupon_id     String         @db.Uuid
+  status        PaymentsStatus @default(PROCESSING)
+  created_at    DateTime       @default(now())
+  modified_at   DateTime       @updatedAt
+  Items         Items[]
+}
+
+enum PaymentsStatus {
+  SUCCESS
+  FAILURE
+  PROCESSING
+}
+
+model Coupons {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  percent     Float
+  max_discout Int
+  min_amount  Int?
+  start_date  DateTime   @default(now())
+  expiry_date DateTime
+  created_at  DateTime   @default(now())
+  modified_at DateTime   @updatedAt
+  Payments    Payments[]
+}
+
+model Foods {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String
+  price         Float
+  image         Bytes?
+  restaurant    Restaurants @relation(fields: [restaurant_id], references: [id])
+  restaurant_id String      @db.Uuid
+  created_at    DateTime    @default(now())
+  modified_at   DateTime    @updatedAt
+  Items         Items[]
+}
+
+model Items {
+  id       String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  food     Foods    @relation(fields: [food_id], references: [id])
+  food_id  String   @db.Uuid
+  order    Payments @relation(fields: [order_id], references: [id])
+  order_id String   @db.Uuid
+}

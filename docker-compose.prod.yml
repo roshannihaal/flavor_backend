@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   api:
     extends:
@@ -11,6 +9,14 @@ services:
       target: production
     environment:
       - NODE_ENV=production
+  db:
+    extends:
+      file: docker-compose.yml
+      service: db
+    networks:
+      - flavor-network
+    volumes:
+      - ./DATA/DB_DATA:/var/lib/postgresql/data
 
 networks:
   flavor-network:
