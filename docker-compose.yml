@@ -8,6 +8,8 @@ services:
     environment:
       - PORT=${PORT}
       - DATABASE_URL=${DATABASE_URL}
+      - HOST=${HOST}
+      - REDIS_PORT=${REDIS_PORT}
     ports:
       - ${PORT}:${PORT}
     extra_hosts:
