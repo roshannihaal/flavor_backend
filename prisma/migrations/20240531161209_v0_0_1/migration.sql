@@ -1,5 +1,8 @@
 -- CreateEnum
-CREATE TYPE "PaymentsStatus" AS ENUM ('SUCCESS', 'FAILURE', 'PROCESSING');
+CREATE TYPE "RoleName" AS ENUM ('USER', 'ADMIN', 'RESTAURANT');
+
+-- CreateEnum
+CREATE TYPE "PaymentStatus" AS ENUM ('SUCCESS', 'FAILURE', 'PROCESSING');
 
 -- CreateTable
 CREATE TABLE "Backup" (
@@ -30,11 +33,10 @@ CREATE TABLE "Users" (
     "email" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "role_id" TEXT NOT NULL,
+    "role_id" "RoleName" NOT NULL DEFAULT 'USER',
     "status" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3) NOT NULL,
-    "rolesId" TEXT NOT NULL,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -52,10 +54,8 @@ CREATE TABLE "Restaurants" (
 
 -- CreateTable
 CREATE TABLE "Roles" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "Roles_pkey" PRIMARY KEY ("id")
+    "id" "RoleName" NOT NULL,
+    "name" TEXT NOT NULL
 );
 
 -- CreateTable
@@ -66,7 +66,7 @@ CREATE TABLE "Payments" (
     "amount" DOUBLE PRECISION NOT NULL,
     "rating" DOUBLE PRECISION NOT NULL,
     "coupon_id" UUID NOT NULL,
-    "status" "PaymentsStatus" NOT NULL DEFAULT 'PROCESSING',
+    "status" "PaymentStatus" NOT NULL DEFAULT 'PROCESSING',
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "modified_at" TIMESTAMP(3) NOT NULL,
 
@@ -114,7 +114,7 @@ CREATE TABLE "Items" (
 CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Roles_name_key" ON "Roles"("name");
+CREATE UNIQUE INDEX "Roles_id_key" ON "Roles"("id");
 
 -- AddForeignKey
 ALTER TABLE "Backup" ADD CONSTRAINT "Backup_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "Users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

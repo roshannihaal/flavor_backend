@@ -38,11 +38,10 @@ model Users {
   name          String
   password      String
   role          Roles           @relation(fields: [role_id], references: [id])
-  role_id       String
+  role_id       RoleName        @default(USER)
   status        Boolean         @default(true)
   created_at    DateTime        @default(now())
   modified_at   DateTime        @updatedAt
-  rolesId       String
   Authenticator Authenticator[]
   Backup        Backup[]
   Restaurants   Restaurants[]
@@ -61,28 +60,34 @@ model Restaurants {
 }
 
 model Roles {
-  id    String  @id
-  name  String  @unique
+  id    RoleName @unique
+  name  String
   Users Users[]
 }
 
+enum RoleName {
+  USER
+  ADMIN
+  RESTAURANT
+}
+
 model Payments {
-  id            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user          Users          @relation(fields: [user_id], references: [id])
-  user_id       String         @db.Uuid
-  restaurant    Restaurants    @relation(fields: [restaurant_id], references: [id])
-  restaurant_id String         @db.Uuid
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user          Users         @relation(fields: [user_id], references: [id])
+  user_id       String        @db.Uuid
+  restaurant    Restaurants   @relation(fields: [restaurant_id], references: [id])
+  restaurant_id String        @db.Uuid
   amount        Float
   rating        Float
-  coupn         Coupons        @relation(fields: [coupon_id], references: [id])
-  coupon_id     String         @db.Uuid
-  status        PaymentsStatus @default(PROCESSING)
-  created_at    DateTime       @default(now())
-  modified_at   DateTime       @updatedAt
+  coupn         Coupons       @relation(fields: [coupon_id], references: [id])
+  coupon_id     String        @db.Uuid
+  status        PaymentStatus @default(PROCESSING)
+  created_at    DateTime      @default(now())
+  modified_at   DateTime      @updatedAt
   Items         Items[]
 }
 
-enum PaymentsStatus {
+enum PaymentStatus {
   SUCCESS
   FAILURE
   PROCESSING

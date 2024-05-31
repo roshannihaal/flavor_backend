@@ -1,5 +1,7 @@
 FROM node:20.13-bookworm-slim as base
 
+RUN apt-get update -y && apt-get install -y openssl
+
 FROM base as development
 
 WORKDIR /usr/src/app
