@@ -1,5 +1,3 @@
-import { PrismaClient, PaymentStatus, RoleName } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient()
-
-export { prisma, PaymentStatus, RoleName }
+export const prisma = new PrismaClient()

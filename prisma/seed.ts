@@ -1,4 +1,6 @@
-import { prisma, logger, RoleName } from '../src/utils'
+import { PrismaClient, RoleName } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 async function main() {
   const data = [
@@ -26,7 +28,6 @@ async function main() {
     await main()
     await prisma.$disconnect()
   } catch (error: any) {
-    logger.fatal(error.message, 'Seeding Error')
     await prisma.$disconnect()
     process.exit(1)
   }
