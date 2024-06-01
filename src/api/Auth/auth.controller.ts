@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { SignupDTO } from './auth.dto'
+import { CreateUser, SignupDTO } from './auth.dto'
 import { Auth } from './auth.service'
 import { addNewSession, generateJwt } from '../../utils'
 
@@ -29,15 +29,17 @@ export const signup = async (
     }
 
     // Create new user
-    const userData = {
+    const userData: CreateUser = {
       email: body.email,
       name: body.name,
       password: body.password,
-      role: {
+    }
+    if (body.roleId) {
+      userData.role = {
         connect: {
           id: body.roleId,
         },
-      },
+      }
     }
     const newUser = await auth.create(userData)
 
