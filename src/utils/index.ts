@@ -1,4 +1,5 @@
 export { logger, httpLogger } from './Logger'
 export { getFileName } from './GetFileName'
 export { prisma } from './PrismaClient'
-export { connectToRedis } from './RedisClient'
+export { connectToRedis, addNewSession } from './RedisClient'
+export { generateJwt } from './Jwt'

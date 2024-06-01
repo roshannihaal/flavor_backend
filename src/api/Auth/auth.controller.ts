@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { SignupDTO } from './auth.dto'
 import { Auth } from './auth.service'
+import { addNewSession, generateJwt } from '../../utils'
 
 export const signup = async (
   req: Request<unknown, unknown, SignupDTO>,
@@ -40,11 +41,16 @@ export const signup = async (
     }
     const newUser = await auth.create(userData)
 
+    // Create session
+    const { sessionId, token } = generateJwt(newUser.id, newUser.role_id)
+    await addNewSession(newUser.id, sessionId)
+
     // Send response
     const response = {
       message: 'User created',
       data: {
         id: newUser.id,
+        token,
       },
     }
     res.status(200).send(response)
